@@ -1,0 +1,18 @@
+{
+    "rules": [
+      {
+        "name": "Máximo de líneas por método",
+        "description": "Un método no debe tener más de N líneas.",
+        "max_lines": 18,
+        "category": "Capa de persistencia",
+        "level": "Grave"
+      },
+      {
+        "name": "Máximo de parámetros por método",
+        "description": "Un método no debe tener más de N parámetros.",
+        "max_parameters": 1,
+        "category": "Capa de lógica",
+        "level": "Moderado"
+      }
+    ]
+}

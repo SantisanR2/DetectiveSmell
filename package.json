@@ -17,7 +17,7 @@
     "menus": {
       "explorer/context": [
           {
-              "command": "DetectiveSmell.analyzeFolder",
+              "command": "DetectiveSmell.analyzeProyect",
               "when": "explorerResourceIsFolder",
               "group": "DetectiveSmell"
           }
@@ -25,10 +25,33 @@
     },
     "commands": [
       {
-        "command": "DetectiveSmell.analyzeFolder",
-        "title": "Analizar Carpeta"
+        "command": "DetectiveSmell.analyzeProyect",
+        "title": "Analizar proyecto"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "DetectiveSmell",
+      "properties": {
+        "DetectiveSmell.selectedRules": {
+          "type": "array",
+          "default": ["Máximo de líneas por método", "Máximo de parámetros por método"],
+          "description": "La lista con las reglas a aplicar",
+          "items": {
+            "type": "string",
+            "enum": ["Máximo de líneas por método", "Máximo de parámetros por método"],
+            "description": {
+              "Máximo de líneas por método": "Esta regla indica el máximo de líneas que puede tener un método. Si un método tiene más líneas que el valor establecido, se considera que el método tiene un smell code.",
+              "Máximo de parámetros por método": "Esta regla indica el máximo de parámetros que puede tener un método. Si un método tiene más parámetros que el valor establecido, se considera que el método tiene un smell code."
+            }
+          }
+        },
+        "DetectiveSmell.selectedProjectType": {
+          "type": "string",
+          "default": "SpringBoot",
+          "description": "El tipo de proyecto que se va a analizar"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

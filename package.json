@@ -32,10 +32,10 @@
     "configuration": {
       "title": "DetectiveSmell",
       "properties": {
-        "DetectiveSmell.selectedRules": {
+        "DetectiveSmell.selectedRulesSpringBoot": {
           "type": "array",
           "default": ["Máximo de líneas por método", "Máximo de parámetros por método"],
-          "description": "La lista con las reglas a aplicar",
+          "description": "La lista con las reglas a análizar para un proyecto SpringBoot",
           "items": {
             "type": "string",
             "enum": ["Máximo de líneas por método", "Máximo de parámetros por método"],
@@ -48,7 +48,8 @@
         "DetectiveSmell.selectedProjectType": {
           "type": "string",
           "default": "SpringBoot",
-          "description": "El tipo de proyecto que se va a analizar"
+          "enum": ["SpringBoot", "Angular", "NextJS"],
+          "description": "El tipo de proyecto que se va a analizar."
         }
       }
     }

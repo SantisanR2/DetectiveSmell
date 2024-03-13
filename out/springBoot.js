@@ -52,28 +52,21 @@ function analyzeSpringBootProject(proyecto, rules, selectedRules, context) {
             'Capa de lógica': [],
             'Capa de controladores': []
         };
+        let annotationsEntity = [];
         let visitor = (0, java_ast_1.createVisitor)({
-            visitMethodDeclaration: (node) => {
+            visitClassDeclaration: (node) => {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Máximo de líneas por método' && selectedRules.includes(rule.name)) {
-                        if (rule.max_lines && node && node.stop && node.stop.line - node.start.line > rule.max_lines) {
-                            report[rule.category].push({
-                                message: `En el método en la línea ${node.start.line} del archivo ${filePath}`,
-                                level: rule.level,
-                                name: rule.name,
-                                description: rule.description,
-                                example: rule.example,
-                                line: node.start.line,
-                                path: filePath
-                            });
-                        }
-                    }
-                    else if (rule.name === 'Máximo de parámetros por método' && selectedRules.includes(rule.name)) {
-                        if (rule.max_parameters) {
-                            const parameterCount = node.formalParameters().formalParameterList()?.formalParameter().length || 0;
-                            if (parameterCount > rule.max_parameters) {
+                    if (rule.name === 'Todos los atributos de las entidades son objetos' && selectedRules.includes(rule.name)) {
+                        if (node.IDENTIFIER().symbol.text?.includes("Entity")) {
+                            let pass = false;
+                            for (const nodei of node.classBody().classBodyDeclaration()) {
+                                if (nodei.memberDeclaration()?.fieldDeclaration()?.typeType().primitiveType() !== undefined) {
+                                    pass = true;
+                                }
+                            }
+                            if (pass) {
                                 report[rule.category].push({
-                                    message: `En el método en la línea ${node.start.line} del archivo ${filePath}`,
+                                    message: `En el atributo en la línea ${node.start.line} del archivo ${filePath}`,
                                     level: rule.level,
                                     name: rule.name,
                                     description: rule.description,
@@ -87,10 +80,42 @@ function analyzeSpringBootProject(proyecto, rules, selectedRules, context) {
                 }
                 return false;
             },
+            visitAnnotation: (node) => {
+                let clas = node.parent?.parent;
+                if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Entity")) {
+                    annotationsEntity.push({
+                        node: node,
+                        classNode: clas,
+                        filePath: filePath
+                    });
+                }
+                return false;
+            },
             defaultResult: () => true,
             aggregateResult: (a, b) => a,
         });
         visitor.visit(ast);
+        annotationsEntity.reverse();
+        for (const annotation of annotationsEntity) {
+            for (const rule of rules.rules) {
+                if (rule.name === 'Todas las entidades tienen la anotación @Data' && selectedRules.includes(rule.name)) {
+                    if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Data")) {
+                        report[rule.category] = report[rule.category].filter(item => item.path !== annotation.filePath || item.line !== annotation.classNode.start.line);
+                    }
+                    else {
+                        report[rule.category].push({
+                            message: `En la entidad de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            level: rule.level,
+                            name: rule.name,
+                            description: rule.description,
+                            example: rule.example,
+                            line: annotation.classNode.start.line,
+                            path: annotation.filePath
+                        });
+                    }
+                }
+            }
+        }
         return report;
     };
     const javaFilesContent = readJavaFiles(proyecto);

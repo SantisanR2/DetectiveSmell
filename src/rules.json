@@ -1,20 +1,18 @@
 {
     "rules": [
       {
-        "name": "Máximo de líneas por método",
-        "description": "Un método no debe tener más de N líneas.",
-        "example": "Un método no debe tener más de 20 líneas.",
-        "max_lines": 20,
+        "name": "Todos los atributos de las entidades son objetos",
+        "description": "",
+        "example": "",
         "category": "Capa de persistencia",
         "level": "Leve"
       },
       {
-        "name": "Máximo de parámetros por método",
-        "description": "Un método no debe tener más de N parámetros.",
-        "example":"Un método no debe tener más de 2 parámetros.",
-        "max_parameters": 1,
-        "category": "Capa de lógica",
-        "level": "Moderado"
+        "name": "Todas las entidades tienen la anotación @Data",
+        "description": "",
+        "example": "",
+        "category": "Capa de persistencia",
+        "level": "Leve"
       }
     ]
 }

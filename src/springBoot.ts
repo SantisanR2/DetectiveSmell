@@ -51,7 +51,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             visitClassDeclaration: (node) => {
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todos los atributos de las entidades son objetos' && selectedRules.includes(rule.name)) {
-                        if (node.IDENTIFIER().symbol.text?.includes("Entity")) {
+                        if (node.IDENTIFIER().symbol.text?.includes("Entity") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
                             let pass = false;
                             for (const nodei of node.classBody().classBodyDeclaration()) {
                                 if (nodei.memberDeclaration()?.fieldDeclaration()?.typeType().primitiveType() !== undefined) {
@@ -83,7 +83,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                         filePath: filePath
                     });
                 }
-                if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Service") && !clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Test")) {
+                if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Service") && !clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Test") && !clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Exception")) {
                     annotationsService.push({
                         node: node,
                         classNode: clas,
@@ -97,14 +97,24 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         });
         visitor.visit(ast);
 
-        annotationsEntity.reverse();
+        if (selectedRules.includes("Todas las entidades tienen la anotación @Data")) {
+            let list : any[] = [];
 
-        for (const annotation of annotationsEntity) {
-            for (const rule of rules.rules) {
-                if (rule.name === 'Todas las entidades tienen la anotación @Data' && selectedRules.includes(rule.name)) {
-                    if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Data")) {
-                        report[rule.category] = report[rule.category].filter(item => item.path !== annotation.filePath || item.line !== annotation.classNode.start.line);
-                    } else {
+            for (const annotation of annotationsEntity) {
+                if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Data")) {
+                    list.push(annotation);
+                }
+            }
+            for (const annotation of annotationsEntity) {
+                for (const item of list) {
+                    if (annotation.filePath === item.filePath) {
+                        annotationsEntity = annotationsEntity.filter(item => item.filePath !== annotation.filePath);
+                    }
+                }
+            }
+            for (const annotation of annotationsEntity) {
+                for (const rule of rules.rules) {
+                    if (rule.name === 'Todas las entidades tienen la anotación @Data') {
                         report[rule.category].push({
                             message: `En la entidad de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
                             level: rule.level,
@@ -115,16 +125,29 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
+
                 }
             }
         }
 
-        for (const annotation of annotationsService) {
-            for (const rule of rules.rules) {
-                if (rule.name === 'Todas las clases de lógica tienen la anotación @Service' && selectedRules.includes(rule.name)) {
-                    if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Service")) {
-                        report[rule.category] = report[rule.category].filter(item => item.path !== annotation.filePath || item.line !== annotation.classNode.start.line);
-                    } else {
+        if (selectedRules.includes("Todas las clases de lógica tienen la anotación @Service")) {
+            let list : any[] = [];
+
+            for (const annotation of annotationsService) {
+                if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Service")) {
+                    list.push(annotation);
+                }
+            }
+            for (const annotation of annotationsService) {
+                for (const item of list) {
+                    if (annotation.filePath === item.filePath) {
+                        annotationsService = annotationsService.filter(item => item.filePath !== annotation.filePath);
+                    }
+                }
+            }
+            for (const annotation of annotationsService) {
+                for (const rule of rules.rules) {
+                    if (rule.name === 'Todas las clases de lógica tienen la anotación @Service') {
                         report[rule.category].push({
                             message: `En la clase de lógica de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
                             level: rule.level,
@@ -135,6 +158,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
+
                 }
             }
         }

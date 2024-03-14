@@ -45,6 +45,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         };
 
         let annotationsEntity: any[] = [];
+        let annotationsService: any[] = [];
 
         let visitor = createVisitor({
             visitClassDeclaration: (node) => {
@@ -82,6 +83,13 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                         filePath: filePath
                     });
                 }
+                if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Service") && !clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Test")) {
+                    annotationsService.push({
+                        node: node,
+                        classNode: clas,
+                        filePath: filePath
+                    });
+                }
                 return false;
             },
             defaultResult: () => true,
@@ -99,6 +107,26 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                     } else {
                         report[rule.category].push({
                             message: `En la entidad de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            level: rule.level,
+                            name: rule.name,
+                            description: rule.description,
+                            example: rule.example,
+                            line: annotation.classNode.start.line,
+                            path: annotation.filePath
+                        });
+                    }
+                }
+            }
+        }
+
+        for (const annotation of annotationsService) {
+            for (const rule of rules.rules) {
+                if (rule.name === 'Todas las clases de lógica tienen la anotación @Service' && selectedRules.includes(rule.name)) {
+                    if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Service")) {
+                        report[rule.category] = report[rule.category].filter(item => item.path !== annotation.filePath || item.line !== annotation.classNode.start.line);
+                    } else {
+                        report[rule.category].push({
+                            message: `En la clase de lógica de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,

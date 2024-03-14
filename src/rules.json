@@ -13,6 +13,13 @@
         "example": "",
         "category": "Capa de persistencia",
         "level": "Leve"
+      },
+      {
+        "name": "Todas las clases de lógica tienen la anotación @Service",
+        "description": "",
+        "example": "",
+        "category": "Capa de lógica",
+        "level": "Leve"
       }
     ]
 }

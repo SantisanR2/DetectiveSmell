@@ -114,7 +114,6 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         return report;
     };
     
-
     const javaFilesContent = readJavaFiles(proyecto);
 
     interface GlobalReport {

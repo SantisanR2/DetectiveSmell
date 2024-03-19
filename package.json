@@ -34,14 +34,15 @@
       "properties": {
         "DetectiveSmell.selectedRulesSpringBoot": {
           "type": "array",
-          "default": ["Todos los atributos de las entidades son objetos", "Todas las entidades tienen la anotación @Data"],
+          "default": ["Todos los atributos de las entidades son objetos", "Todas las entidades tienen la anotación @Data", "Todas las clases de lógica tienen la anotación @Service"],
           "description": "La lista con las reglas a análizar para un proyecto SpringBoot",
           "items": {
             "type": "string",
-            "enum": ["Todos los atributos de las entidades son objetos", "Todas las entidades tienen la anotación @Data"],
+            "enum": ["Todos los atributos de las entidades son objetos", "Todas las entidades tienen la anotación @Data", "Todas las clases de lógica tienen la anotación @Service"],
             "description": {
               "Todos los atributos de las entidades son objetos": "",
-              "Todas las entidades tienen la anotación @Data": ""
+              "Todas las entidades tienen la anotación @Data": "",
+              "Todas las clases de lógica tienen la anotación @Service": ""
             }
           }
         },

@@ -20,6 +20,41 @@
         "example": "",
         "category": "Capa de lógica",
         "level": "Leve"
+      },
+      {
+        "name": "Todos los atributos de las clases de lógica tienen la anotación @Autowired",
+        "description": "",
+        "example": "",
+        "category": "Capa de lógica",
+        "level": "Leve"
+      },
+      {
+        "name": "Todas las clases de controladores tienen la anotación @Controller",
+        "description": "",
+        "example": "",
+        "category": "Capa de controladores",
+        "level": "Leve"
+      },
+      {
+        "name": "Todas las clases de controladores tienen la anotación @RequestMapping",
+        "description": "",
+        "example": "",
+        "category": "Capa de controladores",
+        "level": "Leve"
+      },
+      {
+        "name": "Todos los atributos de las clases de controladores tienen la anotación @Autowired",
+        "description": "",
+        "example": "",
+        "category": "Capa de controladores",
+        "level": "Leve"
+      },
+      {
+        "name": "Todas las clases DTO y DetailDTO tienen la anotación @Data",
+        "description": "",
+        "example": "",
+        "category": "Capa de persistencia",
+        "level": "Leve"
       }
     ]
 }

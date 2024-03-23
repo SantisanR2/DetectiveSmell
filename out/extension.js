@@ -35,7 +35,7 @@ const springBoot_1 = require("./springBoot");
 function activate(context) {
     console.log('DetectiveSmell is now active!');
     const extensionFolder = context.extensionPath;
-    const rulesFilePath = path.join(extensionFolder, '/src/rules.json');
+    const rulesFilePath = path.join(extensionFolder, '/src/rulesSpringboot.json');
     const rulesContent = fs.readFileSync(rulesFilePath, 'utf8');
     const rules = JSON.parse(rulesContent);
     let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder) {

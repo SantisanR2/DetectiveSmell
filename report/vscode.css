@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #000000;
+}
+h1 {
+    color: #333;
+}
+.card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin: 20px 0;
+    padding: 20px;
+}
+.card h3 {
+    margin-top: 0;
+}
+.card p {
+    margin: 10px 0;
+}
+.btn-detail {
+    background-color: #008CBA; /* Blue */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 2px;
+    cursor: pointer;
+}
+.severity-leve {
+    color: green;
+}
+.severity-moderado {
+    color: orange;
+}
+.severity-grave {
+    color: red;
+}
+.rule-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background: #f1f1f1;
+}
+.rule h3 {
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    font-weight: 300;
+}
+.rule-detail p {
+    padding: 0 18px;
+}
+.rule:hover {
+    background: #ddd;
+}
+.show {
+    max-height: 500px;
+}

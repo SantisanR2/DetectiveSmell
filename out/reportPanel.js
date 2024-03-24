@@ -79,22 +79,15 @@ class Reportpanel {
     async _update(proyecto, globalReport) {
         const webview = this._panel.webview;
         this._panel.webview.html = this._getHtmlForWebview(webview, proyecto, globalReport);
-        webview.onDidReceiveMessage(async (data) => {
-            switch (data.type) {
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
-                    break;
-                }
-                case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
-                    break;
-                }
+        webview.onDidReceiveMessage(async (message) => {
+            switch (message.command) {
+                case 'openFile':
+                    const document = await vscode.workspace.openTextDocument(message.path);
+                    vscode.window.showTextDocument(document).then(e => {
+                        const range = document.lineAt(message.line - 1).range;
+                        e.selection = new vscode.Selection(range.start, range.end);
+                        e.revealRange(range, vscode.TextEditorRevealType.InCenter);
+                    });
             }
         });
     }
@@ -123,9 +116,12 @@ class Reportpanel {
                             <h3>${category}</h3>
                             ${rules.map(rule => `
                                 <div class="rule">
-                                    <div class="flex" onclick="this.nextElementSibling.classList.toggle('show')">
-                                        <img src="${circleUri}-${rule.level.toLowerCase()}.png"></img>
-                                        <h3>${rule.name} en el archivo <span><b>${rule.path.split('\\').at(-1)}</b></span></h3>
+                                    <div class="flexbox" onclick="this.nextElementSibling.classList.toggle('show')">
+                                        <div class="flex">
+                                            <img src="${circleUri}-${rule.level.toLowerCase()}.png"></img>
+                                            <h3>${rule.name} en el archivo <span><b>${rule.path.split('\\').at(-1)}</b></span></h3>
+                                        </div>
+                                        <button class="btn" onclick="abrirArchivo('${proyecto.replace(/\\/g, '\\\\')}${rule.path.replace(/\\/g, '\\\\')}',${rule.line})"><span>Abrir <svg width="14px" height="14px" viewBox="0 0 15 14" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.71 4.29l-3-3L10 1H4L3 2v12l1 1h9l1-1V5l-.29-.71zM13 14H4V2h5v4h4v8zm-3-9V2l3 3h-3z"/></svg></span></button>
                                     </div>
                                     <div class="rule-detail">
                                         <p><b>Nombre de la regla:</b> ${rule.name}</p>

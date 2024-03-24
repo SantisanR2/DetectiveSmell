@@ -63,6 +63,7 @@ h1 {
     color: #333;
     font-weight: 300;
     margin-bottom: 0;
+    align-items: center;
 }
 .rule-detail p {
     padding: 0 18px;
@@ -75,12 +76,64 @@ h1 {
     max-height: 500px;
 }
 img {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
+}
+.flexbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .flex {
     display: flex;
+    align-items: center;
 }
 hr {
     color:#333;
+}
+.btn {
+cursor: pointer;
+letter-spacing: 2px;
+text-transform: uppercase;
+font-size: 12px;
+width: 150px;
+min-width: 95px;
+height: 35px;
+position: relative;
+border: solid #1f1f1f 2px;
+color: #1f1f1f;
+z-index: 1;
+transition: all 0.5s ease-in-out;
+border-radius: 5px;
+overflow: hidden;
+background-color: transparent;
+margin-bottom: 5px;
+}
+
+.btn:before {
+content: "";
+position: absolute;
+left: 50%;
+top: 0;
+height: 100%;
+width: 0%;
+background: #777;
+border-radius: 23px;
+transition: all 0.5s ease-in-out;
+z-index: -1;
+}
+
+.btn:hover:before {
+width: 120%;
+left: -10%;
+}
+
+.btn:hover {
+color: #f1f1f1;
+border-color: #777;
+}
+
+span {
+    justify-content: center;
+    height: 100%;
 }

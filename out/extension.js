@@ -39,6 +39,7 @@ function activate(context) {
     const rulesContent = fs.readFileSync(rulesFilePath, 'utf8');
     const rules = JSON.parse(rulesContent);
     let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder) {
+        const projectFolder = vscode.workspace.workspaceFolders;
         const config = vscode.workspace.getConfiguration('DetectiveSmell');
         const selectedRulesSpringBoot = config.get('selectedRulesSpringBoot');
         const selectedProjectType = config.get('selectA ProjectType');
@@ -47,7 +48,7 @@ function activate(context) {
         if (selectedFolder === undefined) {
             return vscode.window.showWarningMessage('Uso: Click derecho en el directorio del proyecto y seleccionar "Analizar Proyecto"');
         }
-        let proyecto = selectedFolder.fsPath;
+        let proyecto = projectFolder?.map((folder) => folder.uri.fsPath)[0] || selectedFolder.fsPath;
         console.log("Se está analizando el proyecto " + proyecto);
         if (selectedProjectType === 'SpringBoot') {
             (0, springBoot_1.analyzeSpringBootProject)(proyecto, rules, selectedRulesSpringBoot, selectedSeverityRulesSpringBoot, selectedLayerRulesSpringBoot, context);

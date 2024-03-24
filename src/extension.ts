@@ -20,6 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder: vscode.Uri)
 	{
 
+		 const projectFolder = vscode.workspace.workspaceFolders;
+
 		const config = vscode.workspace.getConfiguration('DetectiveSmell');
 		const selectedRulesSpringBoot = config.get('selectedRulesSpringBoot');
 		const selectedProjectType = config.get('selectA ProjectType');
@@ -31,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 			return vscode.window.showWarningMessage('Uso: Click derecho en el directorio del proyecto y seleccionar "Analizar Proyecto"');
 		}
 
-		let proyecto = selectedFolder.fsPath;
+		let proyecto = projectFolder?.map((folder) => folder.uri.fsPath)[0] || selectedFolder.fsPath;
 		
 		console.log("Se está analizando el proyecto " + proyecto);
 

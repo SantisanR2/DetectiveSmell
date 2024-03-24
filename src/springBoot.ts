@@ -29,6 +29,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         let ast = parse(source);
         interface Report {
             [key: string]: {
+                id: number;
                 name: string;
                 description: string;
                 example: string;
@@ -53,7 +54,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         let visitor = createVisitor({
             visitClassDeclaration: (node) => {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todos los atributos de las entidades son objetos' && selectedRules.includes(rule.name)) {
+                    if (rule.id == 1) {
                         if (node.IDENTIFIER().symbol.text?.includes("Entity") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
                             let pass = false;
                             for (const nodei of node.classBody().classBodyDeclaration()) {
@@ -63,9 +64,10 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                             if (pass) {
                                 report[rule.category].push({
-                                    message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
                                     name: rule.name,
+                                    id: rule.id,
                                     description: rule.description,
                                     example: rule.example,
                                     line: node.start.line,
@@ -74,7 +76,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.name === 'Todos los atributos de las clases de lógica tienen la anotación @Autowired' && selectedRules.includes(rule.name)) {
+                    if(rule.id == 4) {
                         if (node.IDENTIFIER().symbol.text?.includes("Service") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
                             for (const nodei of node.classBody().classBodyDeclaration()) {
                                 if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
@@ -82,6 +84,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                                         message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
                                         name: rule.name,
+                                        id: rule.id,
                                         description: rule.description,
                                         example: rule.example,
                                         line: node.start.line,
@@ -91,7 +94,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.name === 'Todos los atributos de las clases de controladores tienen la anotación @Autowired' && selectedRules.includes(rule.name)) {
+                    if(rule.id == 7) {
                         if (node.IDENTIFIER().symbol.text?.includes("Controller")) {
                             for (const nodei of node.classBody().classBodyDeclaration()) {
                                 if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
@@ -99,12 +102,93 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                                         message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
                                         name: rule.name,
+                                        id: rule.id,
                                         description: rule.description,
                                         example: rule.example,
                                         line: node.start.line,
                                         path: filePath
                                     });                                                                       
                                 }
+                            }
+                        }
+                    }
+                    if(rule.id == 8) {
+                        if(node.IDENTIFIER().symbol.text?.includes("DTO")) {
+                            if((node.parent?.childCount ?? 0) == 2) {
+                                report[rule.category].push({
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    level: rule.level,
+                                    name: rule.name,
+                                    id: rule.id,
+                                    description: rule.description,
+                                    example: rule.example,
+                                    line: node.start.line,
+                                    path: filePath
+                                });
+                            }
+                        }
+                    }
+                    if(rule.id == 2) {
+                        if(node.IDENTIFIER().symbol.text?.includes("Entity") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")){
+                            if((node.parent?.childCount ?? 0) == 2) {
+                                report[rule.category].push({
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    level: rule.level,
+                                    name: rule.name,
+                                    id: rule.id,
+                                    description: rule.description,
+                                    example: rule.example,
+                                    line: node.start.line,
+                                    path: filePath
+                                });
+                            }
+                        }
+                    }
+                    if(rule.id == 3) {
+                        if(node.IDENTIFIER().symbol.text?.includes("Service") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
+                            if((node.parent?.childCount ?? 0) == 2) {
+                                report[rule.category].push({
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    level: rule.level,
+                                    name: rule.name,
+                                    id: rule.id,
+                                    description: rule.description,
+                                    example: rule.example,
+                                    line: node.start.line,
+                                    path: filePath
+                                });
+                            }
+                        }
+                    }
+                    if(rule.id == 5) {
+                        if(node.IDENTIFIER().symbol.text?.includes("Controller")) {
+                            if((node.parent?.childCount ?? 0) == 2) {
+                                report[rule.category].push({
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    level: rule.level,
+                                    name: rule.name,
+                                    id: rule.id,
+                                    description: rule.description,
+                                    example: rule.example,
+                                    line: node.start.line,
+                                    path: filePath
+                                });
+                            }
+                        }
+                    }
+                    if(rule.id == 6) {
+                        if(node.IDENTIFIER().symbol.text?.includes("Controller")) {
+                            if((node.parent?.childCount ?? 0) == 2) {
+                                report[rule.category].push({
+                                    message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
+                                    level: rule.level,
+                                    name: rule.name,
+                                    id: rule.id,
+                                    description: rule.description,
+                                    example: rule.example,
+                                    line: node.start.line,
+                                    path: filePath
+                                });
                             }
                         }
                     }
@@ -134,7 +218,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                         filePath: filePath
                     });
                 }
-                if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("DTO")) {
+                if (clas.classDeclaration()?.IDENTIFIER().text.includes("DTO")) {
                     annotationsDTO.push({
                         node: node,
                         classNode: clas,
@@ -165,11 +249,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             }
             for (const annotation of annotationsEntity) {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todas las entidades tienen la anotación @Data') {
+                    if (rule.id == 2) {
                         report[rule.category].push({
                             message: `En la entidad de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
+                            id: rule.id,
                             description: rule.description,
                             example: rule.example,
                             line: annotation.classNode.start.line,
@@ -198,11 +283,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             }
             for (const annotation of annotationsService) {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todas las clases de lógica tienen la anotación @Service') {
+                    if (rule.id == 3) {
                         report[rule.category].push({
                             message: `En la clase de lógica de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
+                            id: rule.id,
                             description: rule.description,
                             example: rule.example,
                             line: annotation.classNode.start.line,
@@ -235,11 +321,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
 
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todas las clases de controladores tienen la anotación @Controller') {
+                    if (rule.id == 5) {
                         report[rule.category].push({
                             message: `En la clase de controladores de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
+                            id: rule.id,
                             description: rule.description,
                             example: rule.example,
                             line: annotation.classNode.start.line,
@@ -272,11 +359,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
 
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todas las clases de controladores tienen la anotación @RequestMapping') {
+                    if (rule.id == 6) {
                         report[rule.category].push({
                             message: `En la clase de controladores de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
+                            id: rule.id,
                             description: rule.description,
                             example: rule.example,
                             line: annotation.classNode.start.line,
@@ -307,11 +395,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => {return t.filePath === elem.filePath; }) === index);
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
-                    if (rule.name === 'Todas las clases DTO y DetailDTO tienen la anotación @Data') {
+                    if (rule.id == 8) {
                         report[rule.category].push({
                             message: `En la clase DTO de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
+                            id: rule.id,
                             description: rule.description,
                             example: rule.example,
                             line: annotation.classNode.start.line,
@@ -330,6 +419,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
 
     interface GlobalReport {
         [key: string]: {
+            id: number;
             name: string;
             description: string;
             example: string;
@@ -364,6 +454,49 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
     // Solo deja las reglas con severidad seleccionada en el config
     for (const category in globalReport) {
         globalReport[category] = globalReport[category].filter(rule => selectedSeverityRules.includes(rule.level));
+    }
+
+    // Vuelve selectedRules a un array de int correspondiente al id de la regla 
+    let selectedRulesInt: number[] = [];
+    for (const rule of selectedRules) {
+        if(rule === "Todos los atributos de las entidades son objetos") {
+            selectedRulesInt.push(1);
+        }
+        else if(rule === "Todas las entidades tienen la anotación @Data") {
+            selectedRulesInt.push(2);
+        }
+        else if(rule === "Todas las clases de lógica tienen la anotación @Service") {
+            selectedRulesInt.push(3);
+        }
+        else if(rule === "Todos los atributos de las clases de lógica tienen la anotación @Autowired") {
+            selectedRulesInt.push(4);
+        }
+        else if(rule === "Todas las clases de controladores tienen la anotación @Controller") {
+            selectedRulesInt.push(5);
+        }
+        else if(rule === "Todas las clases de controladores tienen la anotación @RequestMapping") {
+            selectedRulesInt.push(6);
+        }
+        else if(rule === "Todos los atributos de las clases de controladores tienen la anotación @Autowired") {
+            selectedRulesInt.push(7);
+        }
+        else if(rule === "Todas las clases DTO y DetailDTO tienen la anotación @Data") {
+            selectedRulesInt.push(8);
+        }
+    }
+    // Solo deja las reglas seleccionadas en el config
+    for (const category in globalReport) {
+        for (const rule of globalReport[category]) {
+            var esta = false;
+            for(const ruleInt of selectedRulesInt) {
+                if(rule.id.toString() === ruleInt.toString()) {
+                    esta = true;
+                }
+            }
+            if(!esta) {
+                globalReport[category] = globalReport[category].filter(item => item.id !== rule.id);
+            }
+        }
     }
 
     // Ordena globalReport por severidad

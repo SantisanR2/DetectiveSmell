@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 interface GlobalReport {
     [key: string]: {
+        id: number;
         name: string;
         description: string;
         example: string;

@@ -22,7 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const config = vscode.workspace.getConfiguration('DetectiveSmell');
 		const selectedRulesSpringBoot = config.get('selectedRulesSpringBoot');
-		const selectedProjectType = config.get('selectedProjectType');
+		const selectedProjectType = config.get('selectA ProjectType');
+		const selectedSeverityRulesSpringBoot = config.get('selectedSeverityRulesSpringBoot');
+		const selectedLayerRulesSpringBoot = config.get('selectedLayerRulesSpringBoot');
 
 		if (selectedFolder === undefined)
 		{
@@ -35,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (selectedProjectType === 'SpringBoot')
 		{
-			analyzeSpringBootProject(proyecto, rules, selectedRulesSpringBoot as string[], context);
+			analyzeSpringBootProject(proyecto, rules, selectedRulesSpringBoot as string[], selectedSeverityRulesSpringBoot as string[], selectedLayerRulesSpringBoot as string[], context);
 		} else if (selectedProjectType === 'NextJS') {
 			// Se analiza el proyecto en NextJS
 		} else if (selectedProjectType === 'Angular') {

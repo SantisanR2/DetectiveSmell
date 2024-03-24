@@ -41,14 +41,16 @@ function activate(context) {
     let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder) {
         const config = vscode.workspace.getConfiguration('DetectiveSmell');
         const selectedRulesSpringBoot = config.get('selectedRulesSpringBoot');
-        const selectedProjectType = config.get('selectedProjectType');
+        const selectedProjectType = config.get('selectA ProjectType');
+        const selectedSeverityRulesSpringBoot = config.get('selectedSeverityRulesSpringBoot');
+        const selectedLayerRulesSpringBoot = config.get('selectedLayerRulesSpringBoot');
         if (selectedFolder === undefined) {
             return vscode.window.showWarningMessage('Uso: Click derecho en el directorio del proyecto y seleccionar "Analizar Proyecto"');
         }
         let proyecto = selectedFolder.fsPath;
         console.log("Se está analizando el proyecto " + proyecto);
         if (selectedProjectType === 'SpringBoot') {
-            (0, springBoot_1.analyzeSpringBootProject)(proyecto, rules, selectedRulesSpringBoot, context);
+            (0, springBoot_1.analyzeSpringBootProject)(proyecto, rules, selectedRulesSpringBoot, selectedSeverityRulesSpringBoot, selectedLayerRulesSpringBoot, context);
         }
         else if (selectedProjectType === 'NextJS') {
             // Se analiza el proyecto en NextJS

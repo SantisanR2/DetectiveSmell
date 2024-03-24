@@ -1,33 +1,10 @@
 import * as vscode from 'vscode';
-import { parse, createVisitor, ClassDeclarationContext, TypeDeclarationContext, AnnotationContext } from 'java-ast';
+import { parse, createVisitor, TypeDeclarationContext } from 'java-ast';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Reportpanel } from './reportPanel';
 
-export function analyzeSpringBootProject(proyecto: string, rules: any, selectedRules: string[], context: vscode.ExtensionContext) {
-
-    let ast = parse(`
-    package co.edu.uniandes.dse.ligaajedrez.services;
-
-    import java.util.List;
-    import java.util.Optional;
-
-    @Slf4j
-    @Service
-    public class AdministratorLeagueService {
-        @Autowired
-        private LeagueRepository leagueRepository;
-        
-        @santisanrr
-        private AdministratorRepository administratorRepository;
-
-        @Transactional
-        public List<League> getLeagues() {
-            return leagueRepository.findAll();
-        }
-    }
-    `);
-    //console.log(ast);
+export function analyzeSpringBootProject(proyecto: string, rules: any, selectedRules: string[], selectedSeverityRules: string[], selectedLayerRulesSpringBoot: string[], context: vscode.ExtensionContext) {
 
     function readJavaFiles(dir: string): {content: string, filePath: string}[] {
         let javaFilesContent: {content: string, filePath: string}[] = [];
@@ -86,7 +63,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                             if (pass) {
                                 report[rule.category].push({
-                                    message: `En el atributo en la línea ${node.start.line} del archivo ${filePath}`,
+                                    message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
                                     name: rule.name,
                                     description: rule.description,
@@ -102,7 +79,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             for (const nodei of node.classBody().classBodyDeclaration()) {
                                 if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
                                     report[rule.category].push({
-                                        message: `En el atributo en la línea ${node.start.line} del archivo ${filePath}`,
+                                        message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
                                         name: rule.name,
                                         description: rule.description,
@@ -119,7 +96,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             for (const nodei of node.classBody().classBodyDeclaration()) {
                                 if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
                                     report[rule.category].push({
-                                        message: `En el atributo en la línea ${node.start.line} del archivo ${filePath}`,
+                                        message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
                                         name: rule.name,
                                         description: rule.description,
@@ -190,7 +167,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todas las entidades tienen la anotación @Data') {
                         report[rule.category].push({
-                            message: `En la entidad de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            message: `En la entidad de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,
@@ -223,7 +200,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todas las clases de lógica tienen la anotación @Service') {
                         report[rule.category].push({
-                            message: `En la clase de lógica de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            message: `En la clase de lógica de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,
@@ -260,7 +237,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todas las clases de controladores tienen la anotación @Controller') {
                         report[rule.category].push({
-                            message: `En la clase de controladores de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            message: `En la clase de controladores de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,
@@ -297,7 +274,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todas las clases de controladores tienen la anotación @RequestMapping') {
                         report[rule.category].push({
-                            message: `En la clase de controladores de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            message: `En la clase de controladores de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,
@@ -332,7 +309,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 for (const rule of rules.rules) {
                     if (rule.name === 'Todas las clases DTO y DetailDTO tienen la anotación @Data') {
                         report[rule.category].push({
-                            message: `En la clase DTO de la línea ${annotation.classNode.start.line} del archivo ${annotation.filePath}`,
+                            message: `En la clase DTO de la línea <b>${annotation.classNode.start.line}</b> del archivo ${annotation.filePath}`,
                             level: rule.level,
                             name: rule.name,
                             description: rule.description,
@@ -377,12 +354,35 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
         }
     }
 
-    const panel = vscode.window.createWebviewPanel(
-        'analysisReport', // Identificador del panel
-        'Informe de Análisis del Proyecto', // Título del panel
-        vscode.ViewColumn.One, // Muestra el panel en la columna activa
-        {} // Opciones de webview
-    );
+    // Solo deja las capas seleccionadas en el config
+    for (const category in globalReport) {
+        if (!selectedLayerRulesSpringBoot.includes(category)) {
+            delete globalReport[category];
+        }
+    }
 
+    // Solo deja las reglas con severidad seleccionada en el config
+    for (const category in globalReport) {
+        globalReport[category] = globalReport[category].filter(rule => selectedSeverityRules.includes(rule.level));
+    }
+
+    // Ordena globalReport por severidad
+    for (const category in globalReport) {
+        globalReport[category].sort((a, b) => {
+            if (a.level === 'Grave' && (b.level === 'Leve' || b.level === 'Moderado')) {
+                return -1;
+            } else if (a.level === 'Leve' && (b.level === 'Grave' || b.level === 'Moderado')) {
+                return 1;
+            } else if (a.level === 'Moderado' && (b.level === 'Grave')) {
+                return 1;
+            } else if (a.level === 'Moderado' && (b.level === 'Leve')) {
+                return -1;
+            }
+            else {
+                return 0;
+            }
+        });
+    }
+    
     Reportpanel.createOrShow(context.extensionUri, proyecto, globalReport);
 }

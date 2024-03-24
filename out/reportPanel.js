@@ -45,10 +45,7 @@ class Reportpanel {
         const panel = vscode.window.createWebviewPanel(Reportpanel.viewType, "Report", column || vscode.ViewColumn.One, {
             // Enable javascript in the webview
             enableScripts: true,
-            // And restrict the webview to only loading content from our extension's `report` directory.
-            localResourceRoots: [
-                vscode.Uri.joinPath(extensionUri, "report"),
-            ],
+            enableCommandUris: true,
         });
         Reportpanel.currentPanel = new Reportpanel(panel, extensionUri, proyecto, globalReport);
     }
@@ -106,6 +103,8 @@ class Reportpanel {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "report", "main.js"));
         // Uri to load styles into webview
         const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "report", "vscode.css"));
+        // Uri to load media into webview
+        const circleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "report", "circulo"));
         return `<!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -113,8 +112,6 @@ class Reportpanel {
                     <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource};">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <link href="${stylesMainUri}" rel="stylesheet">
-                    <script>
-                    </script>
                 </head>
                 <body>
                     <h1>Informe de Análisis del Proyecto</h1>
@@ -126,13 +123,18 @@ class Reportpanel {
                             <h3>${category}</h3>
                             ${rules.map(rule => `
                                 <div class="rule">
-                                    <h3 onclick="this.nextElementSibling.classList.toggle('show')">${rule.name} en el archivo <a href="#" onclick="openInVSCode(event, '${rule.path}', ${rule.line})">${rule.path.split('\\').at(-1)}</a> <p class="severity-${rule.level.toLowerCase()}">(Severidad: ${rule.level})</p></h3>
-                                    <div class="rule-detail">
-                                        <p>Nombre de la regla: ${rule.name}</p>
-                                        <p>Descripción: ${rule.description}</p>
-                                        <p>Ejemplo de cómo se debe realizar la regla: ${rule.example}</p>
-                                        <p>Mensaje: ${rule.message}</p>
+                                    <div class="flex" onclick="this.nextElementSibling.classList.toggle('show')">
+                                        <img src="${circleUri}-${rule.level.toLowerCase()}.png"></img>
+                                        <h3>${rule.name} en el archivo <span><b>${rule.path.split('\\').at(-1)}</b></span></h3>
                                     </div>
+                                    <div class="rule-detail">
+                                        <p><b>Nombre de la regla:</b> ${rule.name}</p>
+                                        <p><b>Descripción:</b> ${rule.description}</p>
+                                        <p><b>Ejemplo:</b><br><div class="cardExample">${rule.example}</div></p>
+                                        <p><b>Detalle:</b> ${rule.message}</p>
+                                        <p class="severity-${rule.level.toLowerCase()}"><b>Severidad:</b> ${rule.level}</p>
+                                    </div>
+                                    <hr>
                                 </div>
                             `).join('')}
                         </div>

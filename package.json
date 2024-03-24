@@ -51,11 +51,39 @@
             }
           }
         },
-        "DetectiveSmell.selectedProjectType": {
+        "DetectiveSmell.selectA ProjectType": {
           "type": "string",
           "default": "SpringBoot",
           "enum": ["SpringBoot", "Angular", "NextJS"],
           "description": "El tipo de proyecto que se va a analizar."
+        },
+        "DetectiveSmell.selectedSeverityRulesSpringBoot": {
+          "type": "array",
+          "default": ["Leve", "Moderado", "Grave"],
+          "description": "La lista con las severidades por regla",
+          "items": {
+            "type": "string",
+            "enum": ["Leve", "Moderado", "Grave"],
+            "description": {
+              "Leve": "",
+              "Moderado": "",
+              "Grave": ""
+            }
+          }
+        },
+        "DetectiveSmell.selectedLayerRulesSpringBoot": {
+          "type": "array",
+          "default": ["Capa de persistencia", "Capa de lógica", "Capa de controladores"],
+          "description": "La lista con las capas de categoria por regla",
+          "items": {
+            "type": "string",
+            "enum": ["Capa de persistencia", "Capa de lógica", "Capa de controladores"],
+            "description": {
+              "Capa de persistencia": "",
+              "Capa de lógica": "",
+              "Capa de controladores": ""
+            }
+          }
         }
       }
     }

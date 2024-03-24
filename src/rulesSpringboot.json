@@ -3,56 +3,56 @@
     {
       "name": "Todos los atributos de las entidades son objetos",
       "description": "Esta regla asegura que todas las entidades sean objetos para permitir una mayor flexibilidad y escalabilidad en el código. Evita el uso de tipos primitivos que pueden limitar la funcionalidad.",
-      "example": "@Entity public class Usuario { private Long id; private String nombre; }",
+      "example": "@Entity<br> public class Usuario { <br>private Long id; <br>private String nombre; <br>}",
       "category": "Capa de persistencia",
-      "level": "Leve"
+      "level": "Grave"
     },
     {
       "name": "Todas las entidades tienen la anotación @Data",
-      "description": "La anotación @Data de Lombok genera automáticamente getters, setters, equals, hashCode y toString. Esto ayuda a reducir el boilerplate en las entidades.",
-      "example": "@Data @Entity public class Usuario { private Long id; private String nombre; }",
+      "description": "La anotación <i>@Data</i> de Lombok genera automáticamente getters, setters, equals, hashCode y toString. Esto ayuda a reducir el boilerplate en las entidades.",
+      "example": "@Data <br>@Entity <br>public class Usuario { <br>private Long id;<br> private String nombre; <br>}",
       "category": "Capa de persistencia",
       "level": "Moderado"
     },
     {
       "name": "Todas las clases de lógica tienen la anotación @Service",
       "description": "La anotación @Service se utiliza en la capa de servicio donde se escribe la lógica de negocio. Esto ayuda a la inyección de dependencias y a la transaccionalidad.",
-      "example": "@Service public class UsuarioService { ... }",
+      "example": "@Service<br> public class UsuarioService { <br>...<br> }",
       "category": "Capa de lógica",
       "level": "Moderado"
     },
     {
       "name": "Todos los atributos de las clases de lógica tienen la anotación @Autowired",
       "description": "La anotación @Autowired se utiliza para la inyección automática de dependencias. Esto asegura que las clases estén correctamente ensambladas con sus dependencias.",
-      "example": "@Service public class UsuarioService { @Autowired private UsuarioRepository usuarioRepository; ... }",
+      "example": "@Service<br> public class UsuarioService { <br>@Autowired<br> private UsuarioRepository usuarioRepository;<br> ... <br>}",
       "category": "Capa de lógica",
       "level": "Leve"
     },
     {
       "name": "Todas las clases de controladores tienen la anotación @Controller",
       "description": "La anotación @Controller se utiliza en las clases que actúan como controlador en el patrón MVC. Esto permite que Spring reconozca la clase como parte de la capa de controladores.",
-      "example": "@Controller public class UsuarioController { ... }",
+      "example": "@Controller<br> public class UsuarioController { <br>...<br> }",
       "category": "Capa de controladores",
       "level": "Moderado"
     },
     {
       "name": "Todas las clases de controladores tienen la anotación @RequestMapping",
       "description": "La anotación @RequestMapping se utiliza para mapear las solicitudes web a métodos de manejo de controladores. Esto proporciona un mapeo fácil de las URL a los métodos de controlador.",
-      "example": "@Controller @RequestMapping(\"/usuarios\") public class UsuarioController { ... }",
+      "example": "@Controller<br> @RequestMapping(\"/usuarios\")<br> public class UsuarioController {<br> ... <br>}",
       "category": "Capa de controladores",
       "level": "Moderado"
     },
     {
       "name": "Todos los atributos de las clases de controladores tienen la anotación @Autowired",
       "description": "La anotación @Autowired se utiliza para la inyección automática de dependencias en la capa de controladores. Esto asegura que las clases estén correctamente ensambladas con sus dependencias.",
-      "example": "@Controller public class UsuarioController { @Autowired private UsuarioService usuarioService; ... }",
+      "example": "@Controller<br> public class UsuarioController { @Autowired<br> private UsuarioService usuarioService; <br>...<br> }",
       "category": "Capa de controladores",
       "level": "Leve"
     },
     {
       "name": "Todas las clases DTO y DetailDTO tienen la anotación @Data",
       "description": "La anotación @Data se utiliza en las clases DTO para generar automáticamente getters, setters, equals, hashCode y toString. Esto ayuda a reducir el boilerplate en las clases DTO.",
-      "example": "@Data public class UsuarioDTO { private Long id; private String nombre; }",
+      "example": "@Data<br> public class UsuarioDTO { <br>private Long id; <br>private String nombre; <br>}",
       "category": "Capa de persistencia",
       "level": "Moderado"
     }

@@ -1,57 +1,62 @@
-import * as vscode from 'vscode';
-import { parse, createVisitor, TypeDeclarationContext } from 'java-ast';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Reportpanel } from './reportPanel';
-
-export function analyzeSpringBootProject(proyecto: string, rules: any, selectedRules: string[], selectedSeverityRules: string[], selectedLayerRulesSpringBoot: string[], context: vscode.ExtensionContext) {
-
-    function readJavaFiles(dir: string): {content: string, filePath: string}[] {
-        let javaFilesContent: {content: string, filePath: string}[] = [];
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.analyzeSpringBootProject = void 0;
+const java_ast_1 = require("java-ast");
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const reportPanel_1 = require("../reportPanel");
+function analyzeSpringBootProject(proyecto, rules, selectedRules, selectedSeverityRules, selectedLayerRulesSpringBoot, context) {
+    function readJavaFiles(dir) {
+        let javaFilesContent = [];
         const files = fs.readdirSync(dir);
-      
         for (const file of files) {
             const filePath = path.join(dir, file);
             const stat = fs.statSync(filePath);
-      
             if (stat.isDirectory()) {
                 javaFilesContent = javaFilesContent.concat(readJavaFiles(filePath));
-            } else if (stat.isFile() && path.extname(file) === '.java') {
+            }
+            else if (stat.isFile() && path.extname(file) === '.java') {
                 const content = fs.readFileSync(filePath, 'utf8');
-                javaFilesContent.push({content, filePath});
+                javaFilesContent.push({ content, filePath });
             }
         }
-      
         return javaFilesContent;
     }
-
-    const checkJavaRules = (source: string, filePath: string) => {
-        let ast = parse(source);
-        interface Report {
-            [key: string]: {
-                id: number;
-                name: string;
-                description: string;
-                example: string;
-                message: string;
-                level: string;
-                line: number;
-                path: string;
-            }[];
-        }
-    
-        let report: Report = {
+    const checkJavaRules = (source, filePath) => {
+        let ast = (0, java_ast_1.parse)(source);
+        let report = {
             'Capa de persistencia': [],
             'Capa de lógica': [],
             'Capa de controladores': []
         };
-
-        let annotationsEntity: any[] = [];
-        let annotationsService: any[] = [];
-        let annotationsController: any[] = [];
-        let annotationsDTO: any[] = [];
-
-        let visitor = createVisitor({
+        let annotationsEntity = [];
+        let annotationsService = [];
+        let annotationsController = [];
+        let annotationsDTO = [];
+        let visitor = (0, java_ast_1.createVisitor)({
             visitClassDeclaration: (node) => {
                 for (const rule of rules.rules) {
                     if (rule.id.toString() === '1') {
@@ -76,10 +81,10 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.id.toString() === '4') {
+                    if (rule.id.toString() === '4') {
                         if (node.IDENTIFIER().symbol.text?.includes("Service") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
                             for (const nodei of node.classBody().classBodyDeclaration()) {
-                                if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
+                                if (!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
                                     report[rule.category].push({
                                         message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
@@ -89,15 +94,15 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                                         example: rule.example,
                                         line: node.start.line,
                                         path: filePath
-                                    });                                                                       
+                                    });
                                 }
                             }
                         }
                     }
-                    if(rule.id.toString() === '7') {
+                    if (rule.id.toString() === '7') {
                         if (node.IDENTIFIER().symbol.text?.includes("Controller")) {
                             for (const nodei of node.classBody().classBodyDeclaration()) {
-                                if(!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
+                                if (!nodei.modifier()[0]?.classOrInterfaceModifier()?.annotation()?.qualifiedName()?.IDENTIFIER()[0]?.symbol.text?.includes("Autowired") && nodei.memberDeclaration()?.fieldDeclaration() !== undefined) {
                                     report[rule.category].push({
                                         message: `En el atributo en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                         level: rule.level,
@@ -107,14 +112,14 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                                         example: rule.example,
                                         line: node.start.line,
                                         path: filePath
-                                    });                                                                       
+                                    });
                                 }
                             }
                         }
                     }
-                    if(rule.id.toString() === '8') {
-                        if(node.IDENTIFIER().symbol.text?.includes("DTO")) {
-                            if((node.parent?.childCount ?? 0).toString() === '2') {
+                    if (rule.id.toString() === '8') {
+                        if (node.IDENTIFIER().symbol.text?.includes("DTO")) {
+                            if ((node.parent?.childCount ?? 0).toString() === '2') {
                                 report[rule.category].push({
                                     message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
@@ -128,9 +133,9 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.id.toString() === '2') {
-                        if(node.IDENTIFIER().symbol.text?.includes("Entity") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")){
-                            if((node.parent?.childCount ?? 0).toString() === '2') {
+                    if (rule.id.toString() === '2') {
+                        if (node.IDENTIFIER().symbol.text?.includes("Entity") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
+                            if ((node.parent?.childCount ?? 0).toString() === '2') {
                                 report[rule.category].push({
                                     message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
@@ -144,9 +149,9 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.id.toString() === '3') {
-                        if(node.IDENTIFIER().symbol.text?.includes("Service") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
-                            if((node.parent?.childCount ?? 0).toString() === '2') {
+                    if (rule.id.toString() === '3') {
+                        if (node.IDENTIFIER().symbol.text?.includes("Service") && !node.IDENTIFIER().symbol.text?.includes("Test") && !node.IDENTIFIER().symbol.text?.includes("Exception")) {
+                            if ((node.parent?.childCount ?? 0).toString() === '2') {
                                 report[rule.category].push({
                                     message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
@@ -160,9 +165,9 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.id.toString() === '5') {
-                        if(node.IDENTIFIER().symbol.text?.includes("Controller")) {
-                            if((node.parent?.childCount ?? 0).toString() === '2') {
+                    if (rule.id.toString() === '5') {
+                        if (node.IDENTIFIER().symbol.text?.includes("Controller")) {
+                            if ((node.parent?.childCount ?? 0).toString() === '2') {
                                 report[rule.category].push({
                                     message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
@@ -176,9 +181,9 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             }
                         }
                     }
-                    if(rule.id.toString() === '6') {
-                        if(node.IDENTIFIER().symbol.text?.includes("Controller")) {
-                            if((node.parent?.childCount ?? 0).toString() === '2') {
+                    if (rule.id.toString() === '6') {
+                        if (node.IDENTIFIER().symbol.text?.includes("Controller")) {
+                            if ((node.parent?.childCount ?? 0).toString() === '2') {
                                 report[rule.category].push({
                                     message: `En la clase en la línea <b>${node.start.line}</b> del archivo ${filePath}`,
                                     level: rule.level,
@@ -196,7 +201,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                 return false;
             },
             visitAnnotation: (node) => {
-                let clas = node.parent?.parent as TypeDeclarationContext;
+                let clas = node.parent?.parent;
                 if (clas.classDeclaration()?.IDENTIFIER().symbol.text?.includes("Entity")) {
                     annotationsEntity.push({
                         node: node,
@@ -231,10 +236,8 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             aggregateResult: (a, b) => a,
         });
         visitor.visit(ast);
-
         if (selectedRules.includes("Todas las entidades tienen la anotación @Data")) {
-            let list : any[] = [];
-
+            let list = [];
             for (const annotation of annotationsEntity) {
                 if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Data")) {
                     list.push(annotation);
@@ -261,14 +264,11 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
-
                 }
             }
         }
-
         if (selectedRules.includes("Todas las clases de lógica tienen la anotación @Service")) {
-            let list : any[] = [];
-
+            let list = [];
             for (const annotation of annotationsService) {
                 if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Service")) {
                     list.push(annotation);
@@ -295,15 +295,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
-
                 }
             }
         }
-
         if (selectedRules.includes("Todas las clases de controladores tienen la anotación @Controller")) {
-            let list : any[] = [];
-            let complete_list : any[] = annotationsController;
-
+            let list = [];
+            let complete_list = annotationsController;
             for (const annotation of complete_list) {
                 if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Controller")) {
                     list.push(annotation);
@@ -316,9 +313,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                     }
                 }
             }
-            
-            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => {return t.filePath === elem.filePath; }) === index);
-
+            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => { return t.filePath === elem.filePath; }) === index);
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
                     if (rule.id.toString() === '5') {
@@ -333,15 +328,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
-
                 }
             }
         }
-
-        if(selectedRules.includes("Todas las clases de controladores tienen la anotación @RequestMapping")) {
-            let list : any[] = [];
-            let complete_list : any[] = annotationsController;
-
+        if (selectedRules.includes("Todas las clases de controladores tienen la anotación @RequestMapping")) {
+            let list = [];
+            let complete_list = annotationsController;
             for (const annotation of complete_list) {
                 if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("RequestMapping")) {
                     list.push(annotation);
@@ -354,9 +346,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                     }
                 }
             }
-
-            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => {return t.filePath === elem.filePath; }) === index);
-
+            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => { return t.filePath === elem.filePath; }) === index);
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
                     if (rule.id.toString() === '6') {
@@ -371,15 +361,12 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
-
                 }
             }
         }
-
-        if(selectedRules.includes("Todas las clases DTO y DetailDTO tienen la anotación @Data")) {
-            let list : any[] = [];
-            let complete_list : any[] = annotationsDTO;
-
+        if (selectedRules.includes("Todas las clases DTO y DetailDTO tienen la anotación @Data")) {
+            let list = [];
+            let complete_list = annotationsDTO;
             for (const annotation of complete_list) {
                 if (annotation.node.qualifiedName().IDENTIFIER()[0]?.symbol.text?.includes("Data")) {
                     list.push(annotation);
@@ -392,7 +379,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                     }
                 }
             }
-            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => {return t.filePath === elem.filePath; }) === index);
+            complete_list = complete_list.filter((elem, index, self) => self.findIndex((t) => { return t.filePath === elem.filePath; }) === index);
             for (const annotation of complete_list) {
                 for (const rule of rules.rules) {
                     if (rule.id.toString() === '8') {
@@ -407,35 +394,17 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
                             path: annotation.filePath
                         });
                     }
-
                 }
             }
         }
-
         return report;
     };
-    
     const javaFilesContent = readJavaFiles(proyecto);
-
-    interface GlobalReport {
-        [key: string]: {
-            id: number;
-            name: string;
-            description: string;
-            example: string;
-            message: string;
-            level: string;
-            line: number;
-            path: string;
-        }[];
-    }
-
-    let globalReport:GlobalReport = {
+    let globalReport = {
         'Capa de persistencia': [],
         'Capa de lógica': [],
         'Capa de controladores': []
     };
-
     for (const javaFileContent of javaFilesContent) {
         const path = javaFileContent.filePath.split(proyecto)[1];
         const fileReport = checkJavaRules(javaFileContent.content, path);
@@ -443,44 +412,41 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             globalReport[category] = globalReport[category].concat(fileReport[category]);
         }
     }
-
     // Solo deja las capas seleccionadas en el config
     for (const category in globalReport) {
         if (!selectedLayerRulesSpringBoot.includes(category)) {
             delete globalReport[category];
         }
     }
-
     // Solo deja las reglas con severidad seleccionada en el config
     for (const category in globalReport) {
         globalReport[category] = globalReport[category].filter(rule => selectedSeverityRules.includes(rule.level));
     }
-
     // Vuelve selectedRules a un array de int correspondiente al id de la regla 
-    let selectedRulesInt: number[] = [];
+    let selectedRulesInt = [];
     for (const rule of selectedRules) {
-        if(rule === "Todos los atributos de las entidades son objetos") {
+        if (rule === "Todos los atributos de las entidades son objetos") {
             selectedRulesInt.push(1);
         }
-        else if(rule === "Todas las entidades tienen la anotación @Data") {
+        else if (rule === "Todas las entidades tienen la anotación @Data") {
             selectedRulesInt.push(2);
         }
-        else if(rule === "Todas las clases de lógica tienen la anotación @Service") {
+        else if (rule === "Todas las clases de lógica tienen la anotación @Service") {
             selectedRulesInt.push(3);
         }
-        else if(rule === "Todos los atributos de las clases de lógica tienen la anotación @Autowired") {
+        else if (rule === "Todos los atributos de las clases de lógica tienen la anotación @Autowired") {
             selectedRulesInt.push(4);
         }
-        else if(rule === "Todas las clases de controladores tienen la anotación @Controller") {
+        else if (rule === "Todas las clases de controladores tienen la anotación @Controller") {
             selectedRulesInt.push(5);
         }
-        else if(rule === "Todas las clases de controladores tienen la anotación @RequestMapping") {
+        else if (rule === "Todas las clases de controladores tienen la anotación @RequestMapping") {
             selectedRulesInt.push(6);
         }
-        else if(rule === "Todos los atributos de las clases de controladores tienen la anotación @Autowired") {
+        else if (rule === "Todos los atributos de las clases de controladores tienen la anotación @Autowired") {
             selectedRulesInt.push(7);
         }
-        else if(rule === "Todas las clases DTO y DetailDTO tienen la anotación @Data") {
+        else if (rule === "Todas las clases DTO y DetailDTO tienen la anotación @Data") {
             selectedRulesInt.push(8);
         }
     }
@@ -488,27 +454,29 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
     for (const category in globalReport) {
         for (const rule of globalReport[category]) {
             var esta = false;
-            for(const ruleInt of selectedRulesInt) {
-                if(rule.id.toString() === ruleInt.toString()) {
+            for (const ruleInt of selectedRulesInt) {
+                if (rule.id.toString() === ruleInt.toString()) {
                     esta = true;
                 }
             }
-            if(!esta) {
+            if (!esta) {
                 globalReport[category] = globalReport[category].filter(item => item.id !== rule.id);
             }
         }
     }
-
     // Ordena globalReport por severidad
     for (const category in globalReport) {
         globalReport[category].sort((a, b) => {
             if (a.level === 'Grave' && (b.level === 'Leve' || b.level === 'Moderado')) {
                 return -1;
-            } else if (a.level === 'Leve' && (b.level === 'Grave' || b.level === 'Moderado')) {
+            }
+            else if (a.level === 'Leve' && (b.level === 'Grave' || b.level === 'Moderado')) {
                 return 1;
-            } else if (a.level === 'Moderado' && (b.level === 'Grave')) {
+            }
+            else if (a.level === 'Moderado' && (b.level === 'Grave')) {
                 return 1;
-            } else if (a.level === 'Moderado' && (b.level === 'Leve')) {
+            }
+            else if (a.level === 'Moderado' && (b.level === 'Leve')) {
                 return -1;
             }
             else {
@@ -516,6 +484,7 @@ export function analyzeSpringBootProject(proyecto: string, rules: any, selectedR
             }
         });
     }
-    
-    Reportpanel.createOrShow(context.extensionUri, proyecto, globalReport);
+    reportPanel_1.Reportpanel.createOrShow(context.extensionUri, proyecto, globalReport);
 }
+exports.analyzeSpringBootProject = analyzeSpringBootProject;
+//# sourceMappingURL=springBoot.js.map

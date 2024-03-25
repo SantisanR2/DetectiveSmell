@@ -29,15 +29,16 @@ exports.deactivate = exports.activate = void 0;
 const vscode = __importStar(require("vscode"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const springBoot_1 = require("./springBoot");
+const springBoot_1 = require("./frameworks/springBoot");
+const angular_1 = require("./frameworks/angular");
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     console.log('DetectiveSmell is now active!');
     const extensionFolder = context.extensionPath;
-    const rulesFilePath = path.join(extensionFolder, '/src/rulesSpringboot.json');
-    const rulesContent = fs.readFileSync(rulesFilePath, 'utf8');
-    const rules = JSON.parse(rulesContent);
+    const rulesSpringBootFilePath = path.join(extensionFolder, '/src/frameworks/rules/rulesSpringboot.json');
+    const rulesSpringBootContent = fs.readFileSync(rulesSpringBootFilePath, 'utf8');
+    const rulesSpringBoot = JSON.parse(rulesSpringBootContent);
     let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder) {
         const projectFolder = vscode.workspace.workspaceFolders;
         const config = vscode.workspace.getConfiguration('DetectiveSmell');
@@ -51,13 +52,13 @@ function activate(context) {
         let proyecto = projectFolder?.map((folder) => folder.uri.fsPath)[0] || selectedFolder.fsPath;
         console.log("Se está analizando el proyecto " + proyecto);
         if (selectedProjectType === 'SpringBoot') {
-            (0, springBoot_1.analyzeSpringBootProject)(proyecto, rules, selectedRulesSpringBoot, selectedSeverityRulesSpringBoot, selectedLayerRulesSpringBoot, context);
+            (0, springBoot_1.analyzeSpringBootProject)(proyecto, rulesSpringBoot, selectedRulesSpringBoot, selectedSeverityRulesSpringBoot, selectedLayerRulesSpringBoot, context);
         }
         else if (selectedProjectType === 'NextJS') {
             // Se analiza el proyecto en NextJS
         }
         else if (selectedProjectType === 'Angular') {
-            // Se analiza el proyecto en Angular
+            (0, angular_1.analyzeAngular)(proyecto, context);
         }
         else {
             vscode.window.showErrorMessage('El tipo de proyecto seleccionado no es válido');

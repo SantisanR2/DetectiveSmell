@@ -3,7 +3,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { analyzeSpringBootProject } from './springBoot';
+import { analyzeSpringBootProject } from './frameworks/springBoot';
+import { analyzeAngular } from './frameworks/angular';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -13,9 +14,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const extensionFolder = context.extensionPath;
 
-	const rulesFilePath = path.join(extensionFolder, '/src/rulesSpringboot.json');
-	const rulesContent = fs.readFileSync(rulesFilePath, 'utf8');
-	const rules = JSON.parse(rulesContent);
+	const rulesSpringBootFilePath = path.join(extensionFolder, '/src/frameworks/rules/rulesSpringboot.json');
+	const rulesSpringBootContent = fs.readFileSync(rulesSpringBootFilePath, 'utf8');
+	const rulesSpringBoot = JSON.parse(rulesSpringBootContent);
 
 	let disposable = vscode.commands.registerCommand('DetectiveSmell.analyzeProyect', function (selectedFolder: vscode.Uri)
 	{
@@ -39,11 +40,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (selectedProjectType === 'SpringBoot')
 		{
-			analyzeSpringBootProject(proyecto, rules, selectedRulesSpringBoot as string[], selectedSeverityRulesSpringBoot as string[], selectedLayerRulesSpringBoot as string[], context);
+			analyzeSpringBootProject(proyecto, rulesSpringBoot, selectedRulesSpringBoot as string[], selectedSeverityRulesSpringBoot as string[], selectedLayerRulesSpringBoot as string[], context);
 		} else if (selectedProjectType === 'NextJS') {
 			// Se analiza el proyecto en NextJS
 		} else if (selectedProjectType === 'Angular') {
-			// Se analiza el proyecto en Angular
+			analyzeAngular(proyecto, context);
 		} else {
 			vscode.window.showErrorMessage('El tipo de proyecto seleccionado no es válido');
 		}
